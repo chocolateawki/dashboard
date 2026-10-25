@@ -6,21 +6,12 @@
 <body>
 <header><div class="brand"><img src="assets/dano-logo-dark.svg" alt="DANO"><div class="eyebrow">REVOPS ADVISORY · AWKI USA</div></div><h1>Dashboard RevOps</h1><p>Prospección · Conversaciones · Conversiones · Calidad comercial</p></header>
 <main class="wrap">
- <div class="toprow"><div class="row"><span class="chip">LÍNEA BASE · 23 OCT 2026</span><span id="syncStatus" class="status">Conexión pendiente</span></div><div id="userRow" class="row hide"><span id="userEmail" class="sub"></span><button id="logout">Cerrar sesión</button></div></div>
+ <div class="toprow"><div class="row"><span class="chip" id="currentCutChip">ÚLTIMO CORTE · CARGANDO…</span><span id="syncStatus" class="status">Conexión pendiente</span></div><div id="userRow" class="row hide"><span id="userEmail" class="sub"></span><button id="logout">Cerrar sesión</button></div></div>
  <section id="loginView" class="login"><h2>Acceso al dashboard</h2><p class="sub">Ingresa con una cuenta invitada de Supabase. Los cortes se almacenan en la nube y quedan visibles para el equipo autorizado.</p><div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="usuario@empresa.com"></div><div class="field"><label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div><div class="row"><button class="red" id="loginBtn">Iniciar sesión</button><span id="loginMsg" class="error"></span></div><div class="notice" id="setupHint">Si acabas de subir el proyecto, configura primero <code>config.js</code> y ejecuta <code>schema.sql</code> en Supabase.</div></section>
  <section id="appView" class="hide">
-  <div class="section"><h2>01 · Visión ejecutiva</h2><p>Referencia histórica de la auditoría del 23/10/2026; los resultados actuales aparecen en la sección 03 y se alimentan desde Supabase.</p></div>
-  <div class="grid">
-   <div class="tile"><div class="label">Empresas en HubSpot</div><div class="num">343</div><small>128 Fit A</small></div>
-   <div class="tile"><div class="label">Contactos en HubSpot</div><div class="num">275</div><small>45 sin ICP</small></div>
-   <div class="tile"><div class="label">Cobertura comercial</div><div class="num">54,5%</div><small>150 / 275 con intento registrado</small></div>
-   <div class="tile"><div class="label">Respuesta humana por email</div><div class="num">0,68%</div><small>1 / 146 destinatarios conciliados</small></div>
-   <div class="tile"><div class="label">Empresas Fit A sin contacto</div><div class="num">40</div><small>De 128 Fit A</small></div>
-   <div class="tile"><div class="label">Contactados aún New</div><div class="num">90%</div><small>135 / 150 contactados</small></div>
-   <div class="tile"><div class="label">SQL actual</div><div class="num">1</div><small>Calificación por validar</small></div>
-   <div class="tile"><div class="label">Reuniones documentadas</div><div class="num">≥1</div><small>Por email; 0 Completed en CRM</small></div>
-  </div>
-  <div class="section"><h2>02 · Diagnóstico de secuencias e ICP</h2><p>El número de emails no acredita por sí solo el cumplimiento del ciclo completo.</p></div>
+  <div class="section"><h2>01 · Visión ejecutiva</h2><p>Indicadores del último corte disponible en Supabase, sincronizado desde HubSpot. Los datos sin verificación se muestran como N/D.</p></div>
+  <div class="grid" id="executiveCards"><div class="tile"><div class="label">Cargando indicadores…</div><div class="num">N/D</div></div></div>
+  <div class="section"><h2>02 · Diagnóstico de secuencias e ICP</h2><p>Referencia histórica de la auditoría del 23/10/2026. El número de emails no acredita por sí solo el cumplimiento del ciclo completo.</p></div>
   <div class="two">
    <div class="panel"><strong>Emails 1:1 enviados por contacto · n = 147</strong><div style="height:15px"></div><div class="bars" id="emailBars"></div><div class="notice"><strong>92 de 147 (62,6%)</strong> recibieron menos de cuatro emails. Confirmar todos los pasos de la secuencia antes de calificarla como completa.</div></div>
    <div class="panel"><strong>Cobertura comercial por ICP</strong><div style="height:15px"></div><div class="bars" id="icpBars"></div><p class="sub" style="margin:16px 0 0">Cobertura = contacto con al menos un intento registrado; no es tasa de conversión.</p></div>
@@ -63,7 +54,7 @@
    </div><div class="toolbar"><button type="submit" class="red" id="saveBtn">Guardar en Supabase</button><button type="button" id="resetBtn">Limpiar formulario</button><span id="saveMsg" class="status"></span></div></form><div class="notice">Mantén denominadores comparables. Usa <strong>secuencias completas</strong> únicamente cuando se hayan ejecutado todos los pasos aprobados (emails, llamadas u otros). Una casilla vacía significa dato no disponible.</div></div>
   <div class="section"><h2>06 · Histórico de cortes</h2><p>Registros compartidos del equipo, almacenados en Supabase.</p></div>
   <div class="panel"><div class="toolbar"><button id="reloadBtn">Actualizar datos</button><button id="csvBtn">Exportar CSV</button><span id="historyMsg" class="sub"></span></div><div class="scroll"><table class="tbl"><thead><tr><th>Fecha</th><th>Empresas</th><th>Contactos</th><th>Cobertura</th><th>Fit A con contacto</th><th>Emails 1:1</th><th>Llamadas</th><th>Reuniones CRM</th><th>MQL</th><th>SQL</th><th>Negocios</th><th>Acción</th></tr></thead><tbody id="historyBody"></tbody></table></div></div>
-  <div class="section"><h2>07 · Criterios de interpretación</h2></div><div class="info">La línea base 23/10 es descriptiva y no sustituye un cierre mensual. Los cortes automáticos son fotografías acumuladas, salvo que una métrica esté definida expresamente para un período o cohorte. <strong>Sent no certifica entrega; apertura no significa interés; Completed de una llamada no implica conversación; una reunión sin objeto CRM puede existir.</strong> Este dashboard lee los cortes y la actividad mensual que las Edge Functions sincronizan desde HubSpot hacia Supabase; cada actualización se ejecuta por separado.</div>
+  <div class="section"><h2>07 · Criterios de interpretación</h2></div><div class="info">El diagnóstico de secuencias e ICP del 23/10 es histórico y no sustituye un cierre mensual. La visión ejecutiva utiliza el último corte disponible. Los cortes automáticos son fotografías acumuladas, salvo que una métrica esté definida expresamente para un período o cohorte. <strong>Sent no certifica entrega; apertura no significa interés; Completed de una llamada no implica conversación; una reunión sin objeto CRM puede existir.</strong> Este dashboard lee los cortes y la actividad mensual que las Edge Functions sincronizan desde HubSpot hacia Supabase; cada actualización se ejecuta por separado.</div>
  </section>
 </main><footer>DANO · AWKI USA · RevOps Advisory · Dashboard de seguimiento</footer>
 <script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -85,7 +76,22 @@
  $('logout').onclick=async()=>{if(client)await client.auth.signOut()};
  async function load(){if(!session)return;setStatus('Actualizando…');const [cortes,meses]=await Promise.all([client.from('revops_cortes').select('*').order('fecha',{ascending:true}),client.from('revops_actividad_mensual').select('*').order('mes',{ascending:true})]);if(cortes.error){setStatus('Error de consulta');$('historyMsg').textContent=cortes.error.message;return}rows=cortes.data||[];monthlyRows=meses.error?[]:(meses.data||[]);draw();drawMonthly(meses.error?.message||null);setStatus('● Supabase conectado · '+rows.length+' cortes');$('historyMsg').textContent=rows.length+' registros guardados'}
  function card(label,val,sub){return `<div class="tile"><div class="label">${esc(label)}</div><div class="num">${esc(val)}</div><small>${esc(sub)}</small></div>`}
- function draw(){let r=rows.at(-1);$('liveCards').innerHTML=r?[
+ function draw(){let r=rows.at(-1);
+   $('currentCutChip').textContent=r?'ÚLTIMO CORTE · '+r.fecha:'SIN CORTES DISPONIBLES';
+   const contactados=r?.contactos_contactados;
+   const prioritarios=r?.prioritarios;
+   const conAsociados=r?.prioritarios_contactados;
+   $('executiveCards').innerHTML=r?[
+     card('Empresas en HubSpot',fmtNum(r.empresas),fmtNum(prioritarios)+' Fit A'),
+     card('Contactos en HubSpot',fmtNum(r.contactos),'Total actual en CRM'),
+     card('Cobertura comercial',fmtRate(rate(contactados,r.contactos)),fmtNum(contactados)+' / '+fmtNum(r.contactos)+' con intento registrado'),
+     card('Respuesta humana por email',fmtRate(rate(r.respuestas_humanas,r.destinatarios_unicos)),r.respuestas_humanas==null||r.destinatarios_unicos==null?'Pendiente de validación':'Personas con respuesta / destinatarios únicos'),
+     card('Empresas Fit A sin contacto asociado',fmtNum(r.empresas_a_sin_contacto),'De '+fmtNum(prioritarios)+' Fit A'),
+     card('Fit A con contacto asociado',fmtRate(rate(conAsociados,prioritarios)),fmtNum(conAsociados)+' / '+fmtNum(prioritarios)+' empresas'),
+     card('SQL actuales',fmtNum(r.sql_total),'Calificación comercial por validar'),
+     card('Reuniones registradas en CRM',fmtNum(r.reuniones_crm_registradas),'Registro no equivale a reunión realizada')
+   ].join(''):[card('Último corte','N/D','Sin registros en Supabase')].join('');
+   $('liveCards').innerHTML=r?[
  card('Última sincronización',r.fecha,'Fecha de corte HubSpot'),card('Empresas',fmtNum(r.empresas),'Total en CRM'),card('Contactos',fmtNum(r.contactos),'Total en CRM'),card('Cobertura',fmtRate(rate(r.contactos_contactados,r.contactos)),'Con intento / base'),card('Empresas Fit A',fmtNum(r.prioritarios),'Priorizadas en HubSpot'),card('Fit A sin contacto asociado',fmtNum(r.empresas_a_sin_contacto),'Cuentas sin interlocutor'),card('MQL actuales',fmtNum(r.mql_total),'Estado de ciclo de vida'),card('SQL actuales',fmtNum(r.sql_total),'Pendiente validar calidad'),card('Emails 1:1 enviados',fmtNum(r.emails_1a1_enviados),'Acumulado CRM'),card('Llamadas salientes',fmtNum(r.llamadas_salientes),'Acumulado CRM'),card('Reuniones CRM',fmtNum(r.reuniones_crm_registradas),'No equivale a realizadas'),card('Secuencias completas',fmtRate(rate(r.secuencias_completas,r.secuencias_evaluadas)),'Ciclo validado / evaluadas'),card('Respuesta humana',fmtRate(rate(r.respuestas_humanas,r.destinatarios_unicos)),'Personas / destinatarios únicos'),card('Reuniones realizadas',fmtNum(r.reuniones_realizadas),'Registradas y verificadas'),card('Negocios en CRM',fmtNum(r.oportunidades),'Total registrado; no nuevos por período'),card('Coherencia del CRM',fmtRate(rate(r.crm_coherentes,r.crm_auditados)),'Registros coherentes / revisados')].join(''):[card('Último corte','N/D','Registra el primer corte'),card('Cobertura','N/D','Sin datos'),card('Secuencias completas','N/D','Sin datos'),card('Respuesta humana','N/D','Sin datos')].join('');
   if(r){let total=r.prioritarios||0;let con=r.prioritarios_contactados;let sin=r.empresas_a_sin_contacto;let vals=[['Fit A con contactos',con,fmtNum(con)],['Fit A sin contactos',sin,fmtNum(sin)]];barDraw('fitABars',vals.map(x=>[x[0],x[1]??0,x[2]]),Math.max(1,total));let acts=[['Emails 1:1 Sent',r.emails_1a1_enviados],['Llamadas salientes',r.llamadas_salientes],['Reuniones CRM',r.reuniones_crm_registradas]];barDraw('activityBars',acts.map(x=>[x[0],x[1]??0,fmtNum(x[1])]),Math.max(1,...acts.map(x=>x[1]??0)))}else{$('fitABars').textContent='Sin datos';$('activityBars').textContent='Sin datos'}
   drawChart('rateChart',rows,[r=>rate(r.contactos_contactados,r.contactos),r=>rate(r.secuencias_completas,r.secuencias_evaluadas),r=>rate(r.respuestas_humanas,r.destinatarios_unicos)],true);
